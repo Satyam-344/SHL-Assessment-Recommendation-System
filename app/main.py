@@ -1,29 +1,42 @@
+# main.py
+
 from fastapi import FastAPI
-from pydantic import BaseModel
-import openai
 import pandas as pd
-from dotenv import load_dotenv
+import openai
 import os
 
-# Load environment variables
-load_dotenv()
-
+# Initialize FastAPI app
 app = FastAPI()
 
-# Load OpenAI API key from environment variables
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-# Load the assessment data
-assessments_df = pd.read_csv('data/shl_assessments.csv')
-
-class Query(BaseModel):
-    text: str
-
+# Root endpoint for testing
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the SHL Assessment Recommendation System!"}
 
+# Example endpoint: Fetching SHL assessment data from a CSV file
+@app.get("/assessments")
+def get_assessments():
+    # Replace 'shl_assessments.csv' with the actual path to your CSV file
+    df = pd.read_csv("shl_assessments.csv")
+    assessments = df.to_dict(orient="records")
+    return {"assessments": assessments}
+
+# Example endpoint: Using OpenAI for a recommendation based on a query
 @app.post("/recommend")
-def recommend_assessments(query: Query):
-    # Implement recommendation logic based on query
-    return {"recommendations": "List of recommended assessments based on the query"}
+def recommend_assessment(query: str):
+    # Example usage of OpenAI API (ensure you set your OpenAI API key in environment variables)
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    
+    # You can customize this prompt based on your use case
+    prompt = f"Given the job description or query: {query}, recommend relevant SHL assessments."
+    
+    response = openai.Completion.create(
+        engine="text-davinci-003",  # Choose the appropriate engine
+        prompt=prompt,
+        max_tokens=150
+    )
+    
+    recommendation = response.choices[0].text.strip()
+    return {"recommendation": recommendation}
+
+# You can add more endpoints as needed for your specific use case
