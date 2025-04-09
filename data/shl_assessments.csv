@@ -1,3 +1,6 @@
-Assessment Name,Description,Remote Testing Support,Adaptive/IRT Support,Duration,Test Type,URL
-"Java Programming Test","Test for Java developers","Yes","Yes","40","Technical","https://www.shl.com/assessment/java-programming"
-"Python Developer Test","Test for Python developers","Yes","Yes","45","Technical","https://www.shl.com/assessment/python-developer"
+import os
+import pandas as pd
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CSV_PATH = os.path.join(BASE_DIR, 'data', 'shl_assessments.csv')
+df = pd.read_csv(CSV_PATH)
